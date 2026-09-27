@@ -1,0 +1,56 @@
+import type { InvestigationCase } from '../types/investigation'
+
+export const demoCase: InvestigationCase = {
+  id: 'case-001',
+  organization: 'PulsePay',
+  title: 'The 37-Minute Outage',
+  service: 'Payments API',
+  status: 'Under investigation',
+  startedAt: '10:02 UTC',
+  endedAt: '10:37 UTC',
+  duration: '35 min',
+  impactStartedAt: '10:05 UTC',
+  impactDuration: '≈32 min',
+  impact: 'Elevated payment failures',
+  summary: 'Fictional Case #001. Payment API errors were followed by rising database latency and a rollback response. Timeline and source records are illustrative; timing alone does not establish causation.',
+  timeline: [
+    { time: '10:02', title: 'Deployment', detail: 'Payment service release v4.8.2 is recorded as deployed.', tone: 'neutral' },
+    { time: '10:05', title: 'Payment API errors', detail: 'Payment API errors begin rising above the expected range.', tone: 'critical' },
+    { time: '10:12', title: 'Database latency', detail: 'Database latency rises while payment errors continue.', tone: 'warning' },
+    { time: '10:31', title: 'Rollback begins', detail: 'Rollback of the recent payment service release begins.', tone: 'warning' },
+    { time: '10:37', title: 'Recovery', detail: 'Payment API errors and database metrics return toward baseline.', tone: 'resolved' },
+  ],
+  evidence: [
+    { id: 'ev-090', category: 'Incident Report', title: 'PulsePay incident summary', source: 'Incident record · payments', time: '10:05–10:37 UTC', kind: 'comms', excerpt: 'Payment API errors began around 10:05. Database latency rose around 10:12. Rollback began around 10:31, followed by recovery around 10:37.', note: 'This summary preserves the incident sequence; it does not assign a confirmed root cause.' },
+    { id: 'ev-098', category: 'Deployment Log', title: 'Payment service deployment', source: 'Change log · payments-api', time: '10:02 UTC', kind: 'change', excerpt: 'Release v4.8.2 is recorded as deployed to the payment service.', note: 'Deployment timing precedes the API errors. The sequence alone does not establish causation.' },
+    { id: 'ev-104', category: 'Monitoring Report', title: 'Payment and database signals', source: 'Observability · payments-prod', time: '10:05–10:37 UTC', kind: 'telemetry', excerpt: 'Payment API errors begin around 10:05; database latency rises around 10:12. Following the 10:31 rollback, payment errors and database stress recover around 10:37.', note: 'The ordering is consistent with multiple explanations; correlated request-level traces are not included in this summary.' },
+    { id: 'ev-112', category: 'Release Notes', title: 'v4.8.2 request handling changes', source: 'Release record · payments-api', time: '10:02 UTC', kind: 'change', excerpt: 'Release v4.8.2 changed payment request handling.', note: 'The release note identifies the changed area but does not establish how it behaved under incident traffic.' },
+    { id: 'ev-121', category: 'Engineering Messages', title: 'Database suspected during triage', source: 'Incident channel · #payments-incident', time: '10:18 UTC', kind: 'comms', excerpt: '“Database CPU is high; the database may be the cause.”', note: 'This is an in-the-moment hypothesis made after payment errors began and database latency rose.' },
+    { id: 'ev-119', category: 'Customer Reports', title: 'Checkout failure reports', source: 'Customer support · incident intake', time: '10:09–10:29 UTC', kind: 'support', excerpt: 'Customers report failed or delayed checkout attempts while the payment API is degraded.', note: 'Reports establish customer-facing symptoms, not the underlying technical mechanism.' },
+    { id: 'ev-124', category: 'Deployment Log', title: 'v4.8.2 rollback', source: 'Change log · payments-api', time: '10:31 UTC', kind: 'change', excerpt: 'Rollback of payment service release v4.8.2 begins.', note: 'The rollback is followed by improving service metrics; timing alone is not causal proof.' },
+    { id: 'ev-126', category: 'Monitoring Report', title: 'Post-rollback recovery snapshot', source: 'Observability · payments-prod', time: '10:37 UTC', kind: 'telemetry', excerpt: 'Payment errors and database stress recover after v4.8.2 is rolled back.', note: 'The recovery association is relevant evidence, but does not by itself isolate the mechanism.' },
+  ],
+  findings: [
+    { id: 'f-1', title: 'The incident window is time-bounded', detail: 'Payment API errors rise around 10:05 UTC and service metrics recover toward baseline around 10:37 UTC.', confidence: 'medium', evidenceIds: ['ev-104', 'ev-126'] },
+    { id: 'f-2', title: 'A deployment precedes the reported errors', detail: 'Release v4.8.2 is recorded at 10:02 UTC, before payment API errors rise around 10:05 UTC. This sequence alone does not establish causation.', confidence: 'low', evidenceIds: ['ev-098', 'ev-104'] },
+    { id: 'f-3', title: 'Database signals change during the incident', detail: 'Database latency rises around 10:12 UTC, followed by a database CPU increase around 10:18 UTC. The relationship to payment errors remains unconfirmed.', confidence: 'low', evidenceIds: ['ev-111', 'ev-121'] },
+  ],
+  contradictions: [
+    {
+      id: 'c-1',
+      title: 'Database suspected vs. payment-change sequence',
+      claim: 'At 10:18, engineering suspected the database because CPU was high.',
+      supportingEvidenceIds: ['ev-121'],
+      opposingEvidenceIds: ['ev-104', 'ev-098', 'ev-112', 'ev-124', 'ev-126'],
+      whyItMatters: 'Payment errors began before database latency rose; v4.8.2 had changed payment request handling, and both payment errors and database stress recovered after its rollback. These observations inform the investigation but do not alone prove a cause.',
+    },
+    {
+      id: 'c-2',
+      title: 'Recovery follows rollback, mechanism remains open',
+      claim: 'The payment service rollback began around 10:31, followed by service and database recovery around 10:37.',
+      supportingEvidenceIds: ['ev-124', 'ev-126'],
+      opposingEvidenceIds: ['ev-104', 'ev-112'],
+      whyItMatters: 'The close timing is relevant to evaluating the competing explanations, but the available summary does not isolate which changes or conditions drove recovery.',
+    },
+  ],
+}
