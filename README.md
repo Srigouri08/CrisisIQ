@@ -17,7 +17,7 @@ The first dashboard case is fictional **PulsePay — The 37-Minute Outage**. Its
 
 **CrisisIQ → Gemini → Sanity Context MCP → Sanity Knowledge Base → evidence**
 
-The browser chat sends messages to the Express `POST /api/chat` endpoint. The server uses the Vercel AI SDK with Google Gemini and an MCP client connected to the read-only Sanity Context endpoint. Retrieved Knowledge Base content grounds the streamed response. The configured MCP currently exposes `initial_context` and `knowledge_base_read`.
+The browser chat sends messages to `POST /api/chat`. Locally, Vite proxies this route to the Express development server. On Vercel, `api/chat.ts` runs as a Node.js Function and shares the same handler, preserving streamed responses. The handler uses the Vercel AI SDK with Google Gemini and an MCP client connected to the read-only Sanity Context endpoint. Retrieved Knowledge Base content grounds the streamed response. The configured MCP currently exposes `initial_context` and `knowledge_base_read`.
 
 ## Tech stack
 
@@ -28,5 +28,14 @@ React, TypeScript, and Vite power the responsive dashboard. Express hosts the se
 1. Install dependencies with `npm install`.
 2. Copy `.env.example` to `.env.local` and replace its placeholders with a Sanity Context Viewer token and Google Generative AI API key. Keep `.env.local` private; it is ignored by Git. Do not prefix either variable with `VITE_`.
 3. Start the frontend and API together with `npm run dev`, then open the local URL printed by Vite.
+
+## Deploy to Vercel
+
+Import the GitHub repository as a Vercel project. Vercel builds the Vite frontend into `dist` and deploys `api/chat.ts` as the Node.js chat function. Add these server-side environment variables in Vercel Project Settings for the environments you use:
+
+- `SANITY_API_READ_TOKEN`
+- `GOOGLE_GENERATIVE_AI_API_KEY`
+
+Do not add a `VITE_` prefix to either variable; the credentials are used only by the server function.
 
 The model defaults to `gemini-3.8-flash`. `npm run build` creates a production frontend build, and `npm run lint` runs Oxlint.
