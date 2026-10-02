@@ -2,16 +2,16 @@ import {defineField, defineType} from 'sanity'
 
 export const curationTaskType = defineType({
   name: 'curationTask',
-  title: 'Curation Task',
+  title: 'Investigation Review',
   type: 'document',
   groups: [
-    {name: 'task', title: 'Task'},
-    {name: 'review', title: 'Review'},
+    {name: 'task', title: 'Review task'},
+    {name: 'review', title: 'Decision'},
   ],
   fields: [
-    defineField({name: 'title', title: 'Task', type: 'string', group: 'task', validation: r => r.required()}),
-    defineField({name: 'oddity', title: 'Exhibit', type: 'reference', to: [{type: 'oddity'}], group: 'task', validation: r => r.required()}),
-    defineField({name: 'status', title: 'Status', type: 'string', group: 'task', options: {list: [
+    defineField({name: 'title', title: 'Review task', type: 'string', group: 'task', validation: r => r.required()}),
+    defineField({name: 'oddity', title: 'Incident record', type: 'reference', to: [{type: 'oddity'}], group: 'task', validation: r => r.required()}),
+    defineField({name: 'status', title: 'Review status', type: 'string', group: 'task', options: {list: [
       {title: 'Open', value: 'open'},
       {title: 'In review', value: 'review'},
       {title: 'Approved', value: 'approved'},
@@ -30,7 +30,7 @@ export const curationTaskType = defineType({
       {title: 'Request changes', value: 'request_changes'},
       {title: 'Reject', value: 'reject'},
     ]}}),
-    defineField({name: 'decisionNotes', title: 'Decision notes', type: 'text', rows: 4, group: 'review'}),
-    defineField({name: 'dueAt', title: 'Due', type: 'datetime', group: 'review'}),
+    defineField({name: 'decisionNotes', title: 'Decision rationale', type: 'text', rows: 4, group: 'review'}),
+    defineField({name: 'dueAt', title: 'Review due', type: 'datetime', group: 'review'}),
   ],
 })
