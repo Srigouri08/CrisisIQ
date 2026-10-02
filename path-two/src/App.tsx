@@ -7,6 +7,7 @@ import {ArchiveApp} from './ArchiveApp'
 import {AuthScreen} from './AuthScreen'
 import {supabase, supabaseConfigured} from './lib/supabase'
 import './styles.css'
+import './crisis-theme.css'
 
 const config: SanityConfig[] = [{
   projectId: import.meta.env.VITE_SANITY_PROJECT_ID,
