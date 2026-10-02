@@ -76,11 +76,11 @@ function Observatory({search, setSearch, onSelect}: {search: string; setSearch: 
 
 function Curator({onSelect}: {onSelect: (h: DocumentHandle) => void}) {
   const {data: handles = []} = useDocuments({documentType: 'oddity', batchSize: 30, orderings: [{field: '_updatedAt', direction: 'desc'}]})
-  const stages = ['inbox', 'researching', 'review', 'approved']
+  const stages = ['inbox', 'researching', 'review', 'approved', 'archived']
   return (
     <div className="board">
       {stages.map(stage => <div className="lane" key={stage}>
-        <div className="lane-head"><span>{stage}</span><b>{handles.length}</b></div>
+        <div className="lane-head"><span>{stage}</span><b>LIVE</b></div>
         {handles.map(handle => <ArtifactCard key={handle.documentId + stage} handle={handle} stageFilter={stage} compact onSelect={onSelect} />)}
       </div>)}
     </div>
