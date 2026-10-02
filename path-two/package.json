@@ -1,7 +1,7 @@
 {
-  "name": "weird-archive",
+  "name": "crisis-iq-path-two",
   "private": false,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "scripts": {"dev": "vite", "build": "tsc -b && vite build", "preview": "vite preview", "studio": "sanity start", "studio:deploy": "sanity deploy", "seed": "tsx scripts/seed.ts"},
   "dependencies": {
@@ -9,6 +9,7 @@
     "@sanity/sdk": "^3.0.0",
     "@sanity/sdk-react": "^3.0.0",
     "@sanity/ui": "^3.1.0",
+    "@supabase/supabase-js": "^2.58.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "sanity": "^5.11.0"
