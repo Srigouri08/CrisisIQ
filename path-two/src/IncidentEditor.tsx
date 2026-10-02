@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react'
-import {useApplyDocumentActions, useCurrentUser, useDocument, useEditDocument, useNavigateToStudioDocument, type DocumentHandle} from '@sanity/sdk-react'
+import {useCurrentUser, useDocument, useEditDocument, useNavigateToStudioDocument, type DocumentHandle} from '@sanity/sdk-react'
 
 export function IncidentEditor({handle, onClose}: {handle: DocumentHandle; onClose: () => void}) {
   return <aside className="drawer"><EditorBody handle={handle} onClose={onClose} /></aside>
@@ -8,13 +8,15 @@ export function IncidentEditor({handle, onClose}: {handle: DocumentHandle; onClo
 function EditorBody({handle, onClose}: {handle: DocumentHandle; onClose: () => void}) {
   const {data: doc} = useDocument<Record<string, any>>(handle)
   const currentUser = useCurrentUser()
-  const apply = useApplyDocumentActions()
   const {navigateToStudioDocument} = useNavigateToStudioDocument(handle)
   const editTitle = useEditDocument<string>({...handle, path: 'title'})
   const editSummary = useEditDocument<string>({...handle, path: 'summary'})
   const editSeverity = useEditDocument<string>({...handle, path: 'severity'})
   const editStage = useEditDocument<string>({...handle, path: 'workflowStage'})
   const editNotes = useEditDocument<string>({...handle, path: 'reviewNotes'})
+  const editDecision = useEditDocument<string>({...handle, path: 'reviewDecision'})
+  const editReviewer = useEditDocument<string>({...handle, path: 'reviewer'})
+  const editReviewedAt = useEditDocument<string>({...handle, path: 'reviewedAt'})
   const [flash, setFlash] = useState('')
 
   useEffect(() => setFlash(''), [handle.documentId])
@@ -24,7 +26,9 @@ function EditorBody({handle, onClose}: {handle: DocumentHandle; onClose: () => v
   const setReview = (decision: 'approved' | 'changes_requested' | 'rejected') => {
     const nextStage = decision === 'approved' ? 'verified' : decision === 'changes_requested' ? 'investigating' : 'resolved'
     editStage(nextStage)
-    apply([{type: 'set', path: 'reviewDecision', value: decision}, {type: 'set', path: 'reviewer', value: reviewer}, {type: 'set', path: 'reviewedAt', value: new Date().toISOString()}] as any)
+    editDecision(decision)
+    editReviewer(reviewer)
+    editReviewedAt(new Date().toISOString())
     setFlash(decision === 'approved' ? 'Incident verified.' : decision === 'changes_requested' ? 'Changes requested.' : 'Incident rejected.')
   }
 
