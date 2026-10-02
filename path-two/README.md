@@ -1,58 +1,85 @@
-# The Weird Archive
+# CrisisIQ — Incident Investigation Workspace
 
 A Sanity-powered custom content app built for **Sanity Challenge — Path Two: Vibe-Code Something Strange**.
 
-The premise is intentionally odd: treat unexplained stories like museum objects. The result is not a normal blog frontend. It is a small editorial system where a curator can collect an oddity, attach evidence, research it, review it, publish it as an exhibit, and eventually archive it.
+CrisisIQ treats strange or hard-to-explain incidents as structured investigation records rather than ordinary posts. A case can be opened, researched, backed by evidence, compared against conflicting claims, sent through a human review gate, cleared, and archived — with the workflow stored as content.
 
 ## What I built
 
-The `path-two` folder contains a React + Vite app that runs on top of the Sanity App SDK, plus a Sanity Studio and a small seed dataset.
+The `path-two` folder contains a React + Vite custom app running on the **Sanity App SDK**, a Sanity Studio, and a small fictional seed dataset.
 
 The custom app has three views:
 
-- **Observatory** — a public-facing-feeling gallery of the current oddities in the Content Lake.
-- **Curator** — a workflow board for moving documents through `Inbox → Researching → Needs review → Exhibit ready → Archived`.
-- **Activity** — live document-event signals from Sanity.
+- **Command center** — live case counts, search, recent investigation records, and Content Lake status.
+- **Investigation** — a five-stage workflow board: `Intake → Investigating → Human review → Cleared → Archived`.
+- **Activity** — live Sanity document-event signals showing changes made in Studio or the custom app.
 
-Selecting an exhibit opens a custom curator drawer. From there the curator can edit the story, score its weirdness, add evidence and source URLs, write curator notes, open the same document in Sanity Studio, and publish drafts.
+Selecting a case opens a custom investigation drawer. Investigators can edit the narrative, signal intensity, evidence chain, source URLs, conflicting claims, notes, and workflow state. The same record can also be opened in Sanity Studio.
+
+## Authentication
+
+The app has a real account boundary using **Supabase Auth**. Users can create an account, sign in, and sign out before entering the investigation workspace.
+
+The browser only receives the Supabase public/publishable key. No service-role secret is shipped to the client. Configure:
+
+```text
+VITE_SUPABASE_URL=...
+VITE_SUPABASE_ANON_KEY=...
+```
+
+and the Sanity variables from `.env.example` in the Vercel project environment.
 
 ## Why Sanity is doing real work here
 
-Sanity is the source of truth for the archive. The app is not backed by a hard-coded JSON list.
+Sanity is the source of truth for investigation content. The custom app is not backed by a hard-coded JSON list.
 
-The custom interface uses `@sanity/sdk-react` for document reads, projections, edits, document creation, publishing actions, current-user information, navigation into Studio, and document-event subscriptions. Changes made in the Content Lake can surface in the custom app without a manual page refresh.
+The interface uses `@sanity/sdk-react` for document reads, projections, edits, document creation, publishing actions, current-user information, Studio navigation, and document-event subscriptions. Changes made in the Content Lake can surface in the custom app without a manual page refresh.
 
-The schema is designed around the actual editorial process rather than just presentation fields.
+The schema is designed around an investigation process rather than just presentation fields.
 
-### `oddity` document
+### `oddity` document — presented as an Incident Record
 
-- `title` — exhibit name
-- `hook` — short description for the gallery
-- `story` — the longer narrative
-- `evidence[]` — structured evidence items with labels, details, and source URLs
-- `tags[]` — searchable classification
-- `weirdness` — a 1–100 editorial score
+- `title` — case title
+- `hook` — short signal summary
+- `story` — incident narrative
+- `evidence[]` — structured evidence with labels, details, and source URLs
+- `tags[]` — searchable signals/classification
+- `weirdness` — displayed as signal intensity (1–100)
 - `stage` — workflow state stored directly on the Sanity document
-- `curatorNotes` — internal editorial notes
-- `featured` — whether the exhibit should be highlighted
+- `curatorNotes` — investigator notes and rationale
+- `featured` — priority-case flag
 - `sourceUrl` — primary source
 
-The workflow is therefore data, not just CSS labels. The custom editor also applies simple transition gates: an exhibit needs a fuller story before review, and at least one evidence item plus curator notes before it can become exhibit-ready.
+### `curationTask` — presented as Investigation Review
+
+A separate Sanity document is created when a case reaches human review. It stores the linked incident, review status, priority, reviewer, decision, decision rationale, and optional due date.
+
+This makes the review process actual structured data rather than a visual button pretending to be a workflow.
 
 ## App SDK / custom interface
 
-This project deliberately goes beyond a read-only frontend. The custom React interface is wrapped in Sanity's `SanityApp` and uses the Sanity SDK directly.
+This project deliberately goes beyond a read-only frontend. The React interface is wrapped in Sanity's `SanityApp` and uses the Sanity SDK directly.
 
-That gives the project two complementary editing surfaces:
+There are two complementary surfaces over the same Content Lake:
 
-1. **The Weird Archive** — a purpose-built interface for the curator workflow.
-2. **Sanity Studio** — the underlying content-management interface for the same documents.
+1. **CrisisIQ** — the purpose-built investigation interface.
+2. **Sanity Studio** — the underlying content-management interface for the same records.
 
 The `Open in Studio` action connects the two instead of creating a separate copy of the content.
 
+## Workflow gates
+
+The custom editor applies lightweight transition rules:
+
+- A case needs a fuller narrative before it can enter human review.
+- A cleared case needs evidence and investigator notes.
+- Moving into review creates a linked `Investigation Review` document.
+- Reviewers can **Approve**, **Request changes**, or **Reject**.
+- The decision, reviewer identity, and rationale are stored with the review task.
+
 ## Demo content
 
-The repository includes a small seed script with four fictional oddities. They are explicitly fictional demo content so the project does not present invented stories as real investigations.
+The repository includes a small seed script with four **fictional** incident records. They are explicitly demo content so the project does not present invented stories as real investigations.
 
 To seed a dataset locally:
 
@@ -89,17 +116,19 @@ The environment template is in `.env.example`.
 
 ## Build process
 
-This started as a deliberately small idea — a strange-story archive — and grew through the Sanity data model first, then the custom interface around that model. The useful part of the experiment was discovering that the same document could drive a gallery, a workflow board, an editor, and Studio instead of building separate state for each screen.
+The project started as a small experiment around a strange-content archive and evolved into CrisisIQ: a custom investigation workspace where the data model drives the interface.
 
-The finished project is still a challenge prototype rather than a production editorial platform. The content is fictional, the workflow is intentionally lightweight, and the app is focused on demonstrating a real Sanity-backed interaction rather than pretending to solve every problem a production CMS would have.
+The important design decision was to make the same Sanity documents power the case gallery, workflow board, editor, review task, activity stream, and Studio. That is what makes the app more than a polished frontend placed in front of static content.
+
+It is still a challenge prototype rather than a production incident-management platform. The seed records are fictional, the workflow is intentionally lightweight, and the goal is to demonstrate a thoughtful Sanity-backed build honestly.
 
 ## Project structure
 
 ```text
 path-two/
-├── src/              # React custom app + Sanity App SDK integration
-├── schemaTypes/      # Sanity document schema
-├── scripts/          # Optional fictional demo-data seed
+├── src/              # React custom app + Sanity App SDK + Supabase auth
+├── schemaTypes/      # Sanity incident + review schemas
+├── scripts/          # Fictional demo-data seed
 ├── sanity.config.ts  # Sanity Studio configuration
 ├── sanity.cli.ts
 ├── package.json
