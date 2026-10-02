@@ -1,5 +1,5 @@
 import {useMemo, useState} from 'react'
-import {useApplyDocumentActions, useDocument, useDocuments, useEditDocument, useNavigateToStudioDocument, publishDocument, createDocument, createDocumentHandle, type DocumentHandle} from '@sanity/sdk-react'
+import {useApplyDocumentActions, useCurrentUser, useDocument, useDocuments, useEditDocument, useNavigateToStudioDocument, publishDocument, createDocument, createDocumentHandle, type DocumentHandle} from '@sanity/sdk-react'
 
 type Evidence = {label?: string; detail?: string; sourceUrl?: string}
 type Contradiction = {claimA?: string; sourceA?: string; claimB?: string; sourceB?: string; note?: string}
@@ -11,6 +11,7 @@ export function ArtifactEditor({handle, onClose}: {handle: DocumentHandle; onClo
 
 function EditorBody({handle, onClose}: {handle: DocumentHandle; onClose: () => void}) {
   const {data: doc} = useDocument<Record<string, any>>(handle)
+  const currentUser = useCurrentUser()
   const editTitle = useEditDocument<string>({...handle, path: 'title'})
   const editHook = useEditDocument<string>({...handle, path: 'hook'})
   const editStory = useEditDocument<string>({...handle, path: 'story'})
@@ -57,7 +58,7 @@ function EditorBody({handle, onClose}: {handle: DocumentHandle; onClose: () => v
     setError('')
     if (taskHandles.length === 0) { setError('No curation task is linked to this exhibit yet. Move it to review first.'); return }
     if (!(doc.curatorNotes ?? '').trim() && decision !== 'request_changes') { setError('Add curator notes so the decision has an editorial rationale.'); return }
-    editTaskReviewer('Current curator')
+    editTaskReviewer(currentUser?.name ?? currentUser?.email ?? 'Sanity curator')
     editTaskDecision(decision)
     editTaskNotes(doc.curatorNotes ?? '')
     editTaskStatus(decision === 'approve' ? 'approved' : decision === 'request_changes' ? 'changes' : 'blocked')
@@ -84,7 +85,7 @@ function EditorBody({handle, onClose}: {handle: DocumentHandle; onClose: () => v
     <div className="evidence-block"><div className="section-head"><span>Evidence chain</span><button className="secondary small" onClick={addEvidence}>+ Add evidence</button></div>{evidence.length === 0 && <p className="muted">No evidence attached yet. Add at least one item before approval.</p>}{evidence.map((item, index) => <div className="evidence-item" key={index}><input value={item.label ?? ''} onChange={e => updateEvidence(index, {label: e.target.value})} placeholder="Label" /><input value={item.detail ?? ''} onChange={e => updateEvidence(index, {detail: e.target.value})} placeholder="What does it show?" /><input type="url" value={item.sourceUrl ?? ''} onChange={e => updateEvidence(index, {sourceUrl: e.target.value})} placeholder="Source URL" /><button className="remove" onClick={() => removeEvidence(index)}>Remove evidence</button></div>)}</div>
     <div className="evidence-block"><div className="section-head"><span>Contradiction map</span><button className="secondary small" onClick={addContradiction}>+ Add conflict</button></div><p className="muted">Keep competing claims side by side instead of forcing one answer.</p>{contradictions.map((item, index) => <div className="contradiction-item" key={index}><div className="claim-column"><span>CLAIM A</span><input value={item.claimA ?? ''} onChange={e => updateContradiction(index, {claimA: e.target.value})} placeholder="What one source says" /><input type="url" value={item.sourceA ?? ''} onChange={e => updateContradiction(index, {sourceA: e.target.value})} placeholder="Source A URL" /></div><div className="claim-column"><span>CLAIM B</span><input value={item.claimB ?? ''} onChange={e => updateContradiction(index, {claimB: e.target.value})} placeholder="What another source says" /><input type="url" value={item.sourceB ?? ''} onChange={e => updateContradiction(index, {sourceB: e.target.value})} placeholder="Source B URL" /></div><input className="conflict-note" value={item.note ?? ''} onChange={e => updateContradiction(index, {note: e.target.value})} placeholder="Why these claims conflict" /><button className="remove" onClick={() => removeContradiction(index)}>Remove conflict</button></div>)}</div>
     <label>Curator notes<textarea value={doc.curatorNotes ?? ''} onChange={e => editNotes(e.target.value)} placeholder="What still needs checking? Why is this ready?" /></label>
-    {currentStage === 'review' && <div className="review-panel"><div><span className="eyebrow">HUMAN REVIEW GATE</span><strong>Make the editorial decision in the same workflow.</strong></div><div className="review-actions"><button className="secondary" onClick={() => decide('request_changes')}>Request changes</button><button className="danger" onClick={() => decide('reject')}>Reject</button><button className="primary" onClick={() => decide('approve')}>Approve exhibit</button></div><small>Decision, reviewer state and notes are stored on the linked Sanity Curation Task.</small></div>}
+    {currentStage === 'review' && <div className="review-panel"><div><span className="eyebrow">HUMAN REVIEW GATE</span><strong>Make the editorial decision in the same workflow.</strong></div><div className="review-actions"><button className="secondary" onClick={() => decide('request_changes')}>Request changes</button><button className="danger" onClick={() => decide('reject')}>Reject</button><button className="primary" onClick={() => decide('approve')}>Approve exhibit</button></div><small>Decision, reviewer identity and notes are stored on the linked Sanity Curation Task.</small></div>}
     <div className="workflow-box"><div><span className="eyebrow">MODELED WORKFLOW</span><strong>{stageLabels[currentStage] ?? currentStage}</strong></div><div className="workflow-rail">{stages.map((stage, i) => <span key={stage} className={i <= stages.indexOf(currentStage as any) ? 'done' : ''}>{i + 1}</span>)}</div>{nextStage ? <button className="primary full" onClick={advance}>Move to {stageLabels[nextStage]} <span>→</span></button> : <span className="complete">✓ Workflow complete</span>}{error && <div className="error-flash">{error}</div>}</div>
     <div className="actions"><button className="secondary" onClick={navigateToStudioDocument}>Open in Studio ↗</button>{isDraft && <button className="primary" onClick={publish}>Publish exhibit</button>}</div>
     {flash && <div className="flash">✓ {flash}</div>}
