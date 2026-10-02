@@ -1,6 +1,6 @@
-# The Weird Archive
+# CrisisIQ
 
-A small Sanity-powered prototype built for **Sanity Challenge — Path Two: Vibe-Code Something Strange**.
+A small Sanity-powered prototype built 
 
 The idea is simple: treat strange stories like museum objects. Instead of building a normal blog frontend, this app gives a curator a custom interface for creating, researching, editing, and moving those objects through a simple workflow.
 
