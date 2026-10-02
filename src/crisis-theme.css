@@ -1,0 +1,103 @@
+/* CrisisIQ visual refresh: replace the old green/gold-heavy palette with a calmer navy + cyan operations theme. */
+:root {
+  --crisis-bg: #07111f;
+  --crisis-surface: #0c1728;
+  --crisis-surface-2: #101d31;
+  --crisis-surface-3: #14243b;
+  --crisis-border: #21344d;
+  --crisis-border-strong: #2b4667;
+  --crisis-text: #eaf4ff;
+  --crisis-muted: #91a5ba;
+  --crisis-cyan: #57d7ff;
+  --crisis-cyan-soft: #9be8ff;
+  --crisis-cyan-bg: #102d3b;
+  --crisis-blue: #6e9cff;
+}
+
+body { background: var(--crisis-bg) !important; color: var(--crisis-text) !important; }
+.app-shell { background: radial-gradient(ellipse at 57% -24%, rgba(66, 166, 255, .14), transparent 47%), repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(126, 205, 255, .018) 40px) !important; }
+.sidebar { background: #091321 !important; border-right-color: var(--crisis-border) !important; }
+.topbar { background: rgba(7, 16, 29, .94) !important; border-bottom-color: rgba(35, 54, 78, .9) !important; }
+
+.brand-mark { border-color: #2e8eb0 !important; color: var(--crisis-cyan-soft) !important; background: #102838 !important; }
+.brand-name span { color: var(--crisis-cyan) !important; }
+.workspace-switcher { border-color: var(--crisis-border) !important; background: var(--crisis-surface) !important; }
+.workspace-avatar { background: #17304b !important; color: #b8eaff !important; }
+.workspace-copy strong, .user-profile strong { color: #dcecff !important; }
+.workspace-copy small, .user-profile small { color: #71869c !important; }
+.nav-group-label { color: #748aa1 !important; }
+.nav-group-label span { color: #50657b !important; }
+.nav-item { color: #9aadc1 !important; }
+.nav-item > svg { color: #71869c !important; }
+.nav-item:hover, .nav-active { color: #e7f4ff !important; background: #11233a !important; border-color: #203b59 !important; }
+.nav-active > svg { color: var(--crisis-cyan) !important; }
+.nav-count { color: #688097 !important; }
+.icon-button { color: #8298ad !important; }
+.icon-button:hover { background: #152840 !important; color: #e7f4ff !important; border-color: #294664 !important; }
+.case-item { color: inherit; }
+.case-selected { background: #10253d !important; border-color: #244665 !important; }
+.case-indicator { border-color: #56cce9 !important; }
+.case-indicator span { background: var(--crisis-cyan) !important; }
+.case-item-copy strong { color: #dcecff !important; }
+.case-item-copy small { color: #8297ac !important; }
+.case-unread { background: #67d8ff !important; }
+
+.sidebar-note { border-color: #203a55 !important; background: linear-gradient(150deg, #10243a, #0d1a2c 75%) !important; }
+.sidebar-note-icon { border-color: #2b5f7a !important; color: var(--crisis-cyan-soft) !important; background: #123147 !important; }
+.sidebar-note > strong { color: #e3f2ff !important; }
+.sidebar-note p { color: #8ca1b6 !important; }
+.incident-tags span { border-color: #29435f !important; color: #a8c1d8 !important; }
+.user-profile { border-top-color: #20334a !important; }
+.user-avatar, .top-avatar { color: #d7f4ff !important; background: #123c50 !important; }
+.profile-toggle.profile-open { background: #142840 !important; border-color: #2b4667 !important; color: #e7f4ff !important; }
+.profile-menu { border-color: #294563 !important; background: #0c1828 !important; }
+.profile-menu-heading { color: #7f96ac !important; border-bottom-color: #20344d !important; }
+.profile-menu-heading svg { color: var(--crisis-cyan) !important; }
+.profile-signout { color: #d3e3f1 !important; }
+.profile-signout:hover { border-color: #5b3d46 !important; background: #2a1d25 !important; color: #ffb7c3 !important; }
+
+.breadcrumbs { color: #8096ac !important; }
+.breadcrumbs strong { color: #dbe9f7 !important; }
+.crumb-slash { color: #52677d !important; }
+.case-id { border-color: #29405b !important; color: #8198ae !important; }
+.demo-pill { border-color: #2c4159 !important; color: #a9c2d8 !important; }
+.demo-pill > span { background: var(--crisis-cyan) !important; }
+.notification-button i { background: var(--crisis-cyan) !important; border-color: #091321 !important; }
+
+.eyebrow, .section-kicker { color: #83a9c7 !important; }
+.eyebrow-line { background: var(--crisis-cyan) !important; }
+.eyebrow-index { color: #617a91 !important; }
+.title-row h1 { color: #eaf4ff !important; }
+.title-row h1 > span { color: #8398ad !important; }
+.status-pill { border-color: #28556b !important; background: rgba(52, 187, 230, .08) !important; color: #9be8ff !important; }
+.status-pill > span { background: var(--crisis-cyan) !important; }
+.case-summary { color: #9aafc2 !important; }
+.outline-button { border-color: #2a425e !important; background: #101e31 !important; color: #cfe1f1 !important; }
+.outline-button:hover { border-color: #398bb0 !important; color: #b7f0ff !important; }
+
+.metrics-strip { border-color: #21364f !important; background: linear-gradient(100deg, rgba(16, 31, 50, .97), rgba(11, 23, 39, .96)) !important; }
+.metric-item { border-right-color: #273d57 !important; }
+.metric-teal { color: #7de2ff !important; background: #123244 !important; }
+.metric-item small { color: #7d94aa !important; }
+.metric-item strong { color: #dceaf7 !important; }
+.metric-item strong span { color: #71879d !important; }
+.metric-updated { color: #8097ad !important; }
+.live-dot { background: var(--crisis-cyan) !important; box-shadow: 0 0 0 3px rgba(87, 215, 255, .1) !important; }
+
+.investigation-flow { border-top-color: #223851 !important; border-bottom-color: #223851 !important; }
+.investigation-flow a + a { border-left-color: #223851 !important; }
+.investigation-flow a:hover, .investigation-flow a:focus-visible { background: #10233a !important; }
+.investigation-flow a > span { border-color: #2c617b !important; color: #9be8ff !important; background: #102d3b !important; }
+.investigation-flow a > strong { color: #dcecff !important; }
+.investigation-flow a > small { color: #8197ad !important; }
+
+/* Keep destructive/error states distinct; only neutralize the old green accents. */
+.metric-red { color: #ff9f9a !important; background: #42272a !important; }
+.metric-amber { color: #ffd18a !important; background: #3a3021 !important; }
+
+/* Broad card/surface cleanup for the lower investigation panels. */
+[class*="panel"], [class*="card"], [class*="surface"] { border-color: #21364f; }
+[class*="panel"], [class*="card"] { background-color: #0d1a2c; }
+input, textarea { background: #0b1727 !important; color: #e6f2ff !important; border-color: #29435f !important; }
+input::placeholder, textarea::placeholder { color: #667e95 !important; }
+button { color: inherit; }
