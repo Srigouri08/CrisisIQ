@@ -1,7 +1,7 @@
 import {SanityApp, type SanityConfig} from '@sanity/sdk-react'
 import '@sanity/ui/styles.css'
 import {ThemeProvider, buildTheme} from '@sanity/ui'
-import {ArchiveApp} from './ArchiveApp'
+import {CrisisIQApp} from './CrisisIQApp'
 import './styles.css'
 
 const config: SanityConfig[] = [{
@@ -10,11 +10,5 @@ const config: SanityConfig[] = [{
 }]
 
 export default function App() {
-  return (
-    <ThemeProvider theme={buildTheme()}>
-      <SanityApp config={config} fallback={<div className="boot">Opening the archive…</div>}>
-        <ArchiveApp />
-      </SanityApp>
-    </ThemeProvider>
-  )
+  return <ThemeProvider theme={buildTheme()}><SanityApp config={config} fallback={<div className="boot">Opening CrisisIQ…</div>}><CrisisIQApp /></SanityApp></ThemeProvider>
 }
