@@ -21,6 +21,7 @@ function EditorBody({handle, onClose}: {handle: DocumentHandle; onClose: () => v
   const editTitle = useEditDocument<string>({...handle, path: 'title'})
   const editHook = useEditDocument<string>({...handle, path: 'hook'})
   const editStory = useEditDocument<string>({...handle, path: 'story'})
+  const editStage = useEditDocument<string>({...handle, path: 'stage'})
   const editWeirdness = useEditDocument<number>({...handle, path: 'weirdness'})
   const editNotes = useEditDocument<string>({...handle, path: 'curatorNotes'})
   const editEvidence = useEditDocument<Evidence[]>({...handle, path: 'evidence'})
