@@ -1,50 +1,56 @@
-# CrisisIQ
+# CrisisIQ — Sanity-powered investigation desk
 
-A small Sanity-powered prototype built 
-
-The idea is simple: treat strange stories like museum objects. Instead of building a normal blog frontend, this app gives a curator a custom interface for creating, researching, editing, and moving those objects through a simple workflow.
+CrisisIQ is a Sanity-powered investigation workspace built for the Sanity Challenge, Path Two. It treats an incident as structured content rather than a static page, then puts a custom App SDK interface on top of that content for investigation, evidence review, and human approval.
 
 ## What is actually in this repo
 
 The `path-two` folder contains:
 
 - A React + Vite custom app using the Sanity App SDK.
-- A Sanity Studio with an `oddity` document type.
-- An Observatory view for browsing oddities.
-- A Curator view with workflow stages.
-- An Activity view that listens for Sanity document events.
-- An editor for changing an oddity from the custom app.
-- A small seed script with four fictional demo oddities.
+- A Sanity Studio with an `incidentCase` document type designed around investigation work.
+- A live case view for browsing structured incidents.
+- A review board for moving incidents through `New → Investigating → Needs review → Verified → Resolved`.
+- Evidence records with source type, source URL, and confidence.
+- Findings and contradictory claims stored alongside the incident.
+- A custom editor that writes changes directly to Sanity.
+- Persistent review decisions with reviewer, timestamp, notes, and decision state.
+- A real-time activity view listening for Content Lake document events.
+- A seed script containing fictional incident cases for the demo.
 
-The demo content is intentionally fictional. It is there to make the prototype usable without pretending that the stories are real investigations.
+The demo cases are intentionally fictional. They exist to make the product usable during a walkthrough without presenting fabricated events as real-world incidents.
 
-## Sanity model
+## Sanity content model
 
-Each `oddity` document currently includes:
+Each `incidentCase` can include:
 
-- title
-- one-line hook
-- story
-- evidence
-- evidence/source URLs
-- tags
-- weirdness score
+- incident title and ID
+- summary
+- severity and operational status
+- affected services
+- start and resolution timestamps
+- evidence records and provenance
+- incident timeline
+- investigation findings and confidence
+- contradictory claims and their resolution
+- primary source
 - workflow stage
-- curator notes
-- featured flag
-- primary source URL
+- review decision
+- reviewer identity and review timestamp
+- reviewer notes
 
 The workflow is stored on the document itself:
 
-`Inbox → Researching → Needs review → Exhibit ready → Archived`
+`New → Investigating → Needs review → Verified → Resolved`
 
-That means the workflow state is content in Sanity, rather than a list of UI-only labels.
+Review actions are also persisted as content. Approving an incident records an `approved` decision and moves it to `Verified`; requesting changes sends it back to `Investigating`; rejecting it moves it to `Resolved`.
 
 ## Sanity App SDK
 
-The custom interface uses the Sanity SDK to read and work with documents. It also listens for document events so changes made through Sanity can be reflected in the app without a manual refresh.
+The custom CrisisIQ interface uses the Sanity SDK to read document projections, edit document fields, create new incident cases, publish content, and navigate directly to the corresponding Studio document.
 
-The goal here is not to hide Sanity behind a normal website. The Sanity Content Lake and Studio are part of the actual editing experience.
+The app also listens for Sanity document events. Changes made in Sanity Studio can therefore surface in the custom interface without treating the frontend as a separate source of truth.
+
+The goal is to make Sanity part of the actual product experience rather than using it as a hidden CMS behind a read-only frontend.
 
 ## Run locally
 
@@ -55,7 +61,7 @@ cd path-two
 npm install
 ```
 
-Set the Sanity project and dataset values in your local environment. Do not commit tokens or other secrets.
+Set `VITE_SANITY_PROJECT_ID` and `VITE_SANITY_DATASET` in your local environment. Never commit tokens or other secrets.
 
 Run the custom app:
 
@@ -71,7 +77,7 @@ npm run studio
 
 ### Optional demo data
 
-The repository includes a seed script containing four fictional exhibits. To add them to a Sanity dataset, provide a project ID and a write token through your local environment and run:
+The repository includes a seed script containing fictional CrisisIQ incident cases. Provide a project ID and write token through your local environment, then run:
 
 ```bash
 npm run seed
@@ -89,8 +95,8 @@ npm run build
 
 ```text
 path-two/
-├── src/              # React custom app
-├── schemaTypes/      # Sanity document schema
+├── src/              # CrisisIQ custom App SDK interface
+├── schemaTypes/      # Structured incident schema
 ├── scripts/          # Optional demo-data seed script
 ├── sanity.config.ts  # Sanity Studio configuration
 ├── sanity.cli.ts
@@ -100,4 +106,4 @@ path-two/
 
 ## Status
 
-This is a challenge prototype, not a production content-management system. The interesting part is the experiment: how far a custom Sanity app can turn a simple content model into an actual working curation interface.
+This is a challenge prototype, not a production incident-management system. The point of the build is to explore how far structured Sanity content, a custom App SDK interface, real-time Content Lake events, and a human review workflow can be combined into one coherent investigation experience.
