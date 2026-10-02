@@ -1,59 +1,103 @@
 # The Weird Archive
 
-A Sanity-powered content application for curating strange stories, evidence, and unresolved anomalies.
+A small Sanity-powered prototype built for **Sanity Challenge — Path Two: Vibe-Code Something Strange**.
 
-## Why this is a Path Two build
+The idea is simple: treat strange stories like museum objects. Instead of building a normal blog frontend, this app gives a curator a custom interface for creating, researching, editing, and moving those objects through a simple workflow.
 
-This is not a read-only frontend. The app is a custom curator desk sitting directly on top of Sanity Content Lake.
+## What is actually in this repo
 
-- **App SDK:** `SanityApp`, `useDocuments`, `useDocumentProjection`, `useDocument`, `useEditDocument`, `useApplyDocumentActions`, `useDocumentEvent`, and `useNavigateToStudioDocument`.
-- **Real-time editing:** title, hook, story, workflow stage, weirdness score, and curator notes write directly to Sanity with optimistic updates.
-- **Workflow:** each oddity carries a `stage` field: inbox → researching → review → approved → archived. The curator can move an item through the pipeline and publish it from the custom interface.
-- **Custom interface:** the Observatory is a visual archive; the Curator board is a workflow view; Activity is a live mutation feed.
-- **Structured content:** evidence, tags, sources, curation notes, feature status, and workflow state are modeled as Sanity fields instead of being hard-coded into the UI.
+The `path-two` folder contains:
 
-## Run it
+- A React + Vite custom app using the Sanity App SDK.
+- A Sanity Studio with an `oddity` document type.
+- An Observatory view for browsing oddities.
+- A Curator view with workflow stages.
+- An Activity view that listens for Sanity document events.
+- An editor for changing an oddity from the custom app.
+- A small seed script with four fictional demo oddities.
 
-Node 22.12+ is recommended.
+The demo content is intentionally fictional. It is there to make the prototype usable without pretending that the stories are real investigations.
+
+## Sanity model
+
+Each `oddity` document currently includes:
+
+- title
+- one-line hook
+- story
+- evidence
+- evidence/source URLs
+- tags
+- weirdness score
+- workflow stage
+- curator notes
+- featured flag
+- primary source URL
+
+The workflow is stored on the document itself:
+
+`Inbox → Researching → Needs review → Exhibit ready → Archived`
+
+That means the workflow state is content in Sanity, rather than a list of UI-only labels.
+
+## Sanity App SDK
+
+The custom interface uses the Sanity SDK to read and work with documents. It also listens for document events so changes made through Sanity can be reflected in the app without a manual refresh.
+
+The goal here is not to hide Sanity behind a normal website. The Sanity Content Lake and Studio are part of the actual editing experience.
+
+## Run locally
+
+From this directory:
 
 ```bash
 cd path-two
 npm install
 ```
 
-Copy `.env.example` to `.env.local` and add your Sanity project ID and dataset.
+Set the Sanity project and dataset values in your local environment. Do not commit tokens or other secrets.
 
-Start the custom app:
+Run the custom app:
 
 ```bash
 npm run dev
 ```
 
-Start the Studio separately:
+Run the Studio:
 
 ```bash
 npm run studio
 ```
 
-To seed four demo exhibits, create a Sanity write token and run:
+### Optional demo data
+
+The repository includes a seed script containing four fictional exhibits. To add them to a Sanity dataset, provide a project ID and a write token through your local environment and run:
 
 ```bash
 npm run seed
 ```
 
-The seed script uses `SANITY_API_WRITE_TOKEN` only from your local environment. Never commit the token.
+The seed data is only sample content for the prototype.
 
-## Vercel
+## Build
 
-Set `VITE_SANITY_PROJECT_ID` and `VITE_SANITY_DATASET` in the Vercel project. Set the Vercel root directory to `path-two` and use:
+```bash
+npm run build
+```
 
-- Build command: `npm run build`
-- Output directory: `dist`
+## Project structure
 
-The Sanity Studio can be deployed separately with `npm run studio:deploy` after configuring the project ID and dataset.
+```text
+path-two/
+├── src/              # React custom app
+├── schemaTypes/      # Sanity document schema
+├── scripts/          # Optional demo-data seed script
+├── sanity.config.ts  # Sanity Studio configuration
+├── sanity.cli.ts
+├── package.json
+└── vercel.json
+```
 
-## The strange part
+## Status
 
-The UI intentionally treats each content document like a museum object. A story is not just a post: it has a weirdness score, evidence, competing research notes, a curation state, and a path from raw lead to public exhibit.
-
-That makes Sanity part of the experience itself, rather than a database hidden behind a conventional website.
+This is a challenge prototype, not a production content-management system. The interesting part is the experiment: how far a custom Sanity app can turn a simple content model into an actual working curation interface.
