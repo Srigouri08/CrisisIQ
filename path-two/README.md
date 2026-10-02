@@ -1,103 +1,107 @@
 # The Weird Archive
 
-A small Sanity-powered prototype built for **Sanity Challenge — Path Two: Vibe-Code Something Strange**.
+A Sanity-powered custom content app built for **Sanity Challenge — Path Two: Vibe-Code Something Strange**.
 
-The idea is simple: treat strange stories like museum objects. Instead of building a normal blog frontend, this app gives a curator a custom interface for creating, researching, editing, and moving those objects through a simple workflow.
+The premise is intentionally odd: treat unexplained stories like museum objects. The result is not a normal blog frontend. It is a small editorial system where a curator can collect an oddity, attach evidence, research it, review it, publish it as an exhibit, and eventually archive it.
 
-## What is actually in this repo
+## What I built
 
-The `path-two` folder contains:
+The `path-two` folder contains a React + Vite app that runs on top of the Sanity App SDK, plus a Sanity Studio and a small seed dataset.
 
-- A React + Vite custom app using the Sanity App SDK.
-- A Sanity Studio with an `oddity` document type.
-- An Observatory view for browsing oddities.
-- A Curator view with workflow stages.
-- An Activity view that listens for Sanity document events.
-- An editor for changing an oddity from the custom app.
-- A small seed script with four fictional demo oddities.
+The custom app has three views:
 
-The demo content is intentionally fictional. It is there to make the prototype usable without pretending that the stories are real investigations.
+- **Observatory** — a public-facing-feeling gallery of the current oddities in the Content Lake.
+- **Curator** — a workflow board for moving documents through `Inbox → Researching → Needs review → Exhibit ready → Archived`.
+- **Activity** — live document-event signals from Sanity.
 
-## Sanity model
+Selecting an exhibit opens a custom curator drawer. From there the curator can edit the story, score its weirdness, add evidence and source URLs, write curator notes, open the same document in Sanity Studio, and publish drafts.
 
-Each `oddity` document currently includes:
+## Why Sanity is doing real work here
 
-- title
-- one-line hook
-- story
-- evidence
-- evidence/source URLs
-- tags
-- weirdness score
-- workflow stage
-- curator notes
-- featured flag
-- primary source URL
+Sanity is the source of truth for the archive. The app is not backed by a hard-coded JSON list.
 
-The workflow is stored on the document itself:
+The custom interface uses `@sanity/sdk-react` for document reads, projections, edits, document creation, publishing actions, current-user information, navigation into Studio, and document-event subscriptions. Changes made in the Content Lake can surface in the custom app without a manual page refresh.
 
-`Inbox → Researching → Needs review → Exhibit ready → Archived`
+The schema is designed around the actual editorial process rather than just presentation fields.
 
-That means the workflow state is content in Sanity, rather than a list of UI-only labels.
+### `oddity` document
 
-## Sanity App SDK
+- `title` — exhibit name
+- `hook` — short description for the gallery
+- `story` — the longer narrative
+- `evidence[]` — structured evidence items with labels, details, and source URLs
+- `tags[]` — searchable classification
+- `weirdness` — a 1–100 editorial score
+- `stage` — workflow state stored directly on the Sanity document
+- `curatorNotes` — internal editorial notes
+- `featured` — whether the exhibit should be highlighted
+- `sourceUrl` — primary source
 
-The custom interface uses the Sanity SDK to read and work with documents. It also listens for document events so changes made through Sanity can be reflected in the app without a manual refresh.
+The workflow is therefore data, not just CSS labels. The custom editor also applies simple transition gates: an exhibit needs a fuller story before review, and at least one evidence item plus curator notes before it can become exhibit-ready.
 
-The goal here is not to hide Sanity behind a normal website. The Sanity Content Lake and Studio are part of the actual editing experience.
+## App SDK / custom interface
 
-## Run locally
+This project deliberately goes beyond a read-only frontend. The custom React interface is wrapped in Sanity's `SanityApp` and uses the Sanity SDK directly.
 
-From this directory:
+That gives the project two complementary editing surfaces:
+
+1. **The Weird Archive** — a purpose-built interface for the curator workflow.
+2. **Sanity Studio** — the underlying content-management interface for the same documents.
+
+The `Open in Studio` action connects the two instead of creating a separate copy of the content.
+
+## Demo content
+
+The repository includes a small seed script with four fictional oddities. They are explicitly fictional demo content so the project does not present invented stories as real investigations.
+
+To seed a dataset locally:
 
 ```bash
 cd path-two
 npm install
+npm run seed
 ```
 
-Set the Sanity project and dataset values in your local environment. Do not commit tokens or other secrets.
+The seed script expects a Sanity project ID, dataset, and write token in the local environment. Secrets should never be committed.
 
-Run the custom app:
+## Run locally
+
+From `path-two`:
 
 ```bash
+npm install
 npm run dev
 ```
 
-Run the Studio:
+For the Sanity Studio:
 
 ```bash
 npm run studio
 ```
 
-### Optional demo data
-
-The repository includes a seed script containing four fictional exhibits. To add them to a Sanity dataset, provide a project ID and a write token through your local environment and run:
-
-```bash
-npm run seed
-```
-
-The seed data is only sample content for the prototype.
-
-## Build
+Build the custom app with:
 
 ```bash
 npm run build
 ```
 
+The environment template is in `.env.example`.
+
+## Build process
+
+This started as a deliberately small idea — a strange-story archive — and grew through the Sanity data model first, then the custom interface around that model. The useful part of the experiment was discovering that the same document could drive a gallery, a workflow board, an editor, and Studio instead of building separate state for each screen.
+
+The finished project is still a challenge prototype rather than a production editorial platform. The content is fictional, the workflow is intentionally lightweight, and the app is focused on demonstrating a real Sanity-backed interaction rather than pretending to solve every problem a production CMS would have.
+
 ## Project structure
 
 ```text
 path-two/
-├── src/              # React custom app
+├── src/              # React custom app + Sanity App SDK integration
 ├── schemaTypes/      # Sanity document schema
-├── scripts/          # Optional demo-data seed script
+├── scripts/          # Optional fictional demo-data seed
 ├── sanity.config.ts  # Sanity Studio configuration
 ├── sanity.cli.ts
 ├── package.json
 └── vercel.json
 ```
-
-## Status
-
-This is a challenge prototype, not a production content-management system. The interesting part is the experiment: how far a custom Sanity app can turn a simple content model into an actual working curation interface.
