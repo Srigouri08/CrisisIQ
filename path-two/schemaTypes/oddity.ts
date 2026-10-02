@@ -2,22 +2,22 @@ import {defineField, defineType} from 'sanity'
 
 export const oddityType = defineType({
   name: 'oddity',
-  title: 'Oddity',
+  title: 'Incident Record',
   type: 'document',
   groups: [
-    {name: 'story', title: 'Story'},
+    {name: 'story', title: 'Incident'},
     {name: 'evidence', title: 'Evidence'},
-    {name: 'curation', title: 'Curation'},
+    {name: 'curation', title: 'Investigation'},
   ],
   fields: [
-    defineField({name: 'title', title: 'Title', type: 'string', group: 'story', validation: r => r.required().min(4)}),
-    defineField({name: 'hook', title: 'One-line hook', type: 'string', group: 'story', validation: r => r.max(140)}),
-    defineField({name: 'story', title: 'The strange story', type: 'text', rows: 7, group: 'story', validation: r => r.required().min(40)}),
-    defineField({name: 'tags', title: 'Tags', type: 'array', group: 'story', of: [{type: 'string'}], options: {layout: 'tags'}}),
+    defineField({name: 'title', title: 'Case title', type: 'string', group: 'story', validation: r => r.required().min(4)}),
+    defineField({name: 'hook', title: 'Signal summary', type: 'string', group: 'story', validation: r => r.max(140)}),
+    defineField({name: 'story', title: 'Incident narrative', type: 'text', rows: 7, group: 'story', validation: r => r.required().min(40)}),
+    defineField({name: 'tags', title: 'Signals / tags', type: 'array', group: 'story', of: [{type: 'string'}], options: {layout: 'tags'}}),
     defineField({name: 'sourceUrl', title: 'Primary source', type: 'url', group: 'evidence'}),
     defineField({name: 'evidence', title: 'Evidence chain', type: 'array', group: 'evidence', of: [{type: 'object', fields: [
-      defineField({name: 'label', type: 'string', title: 'Label'}),
-      defineField({name: 'detail', type: 'string', title: 'What it shows'}),
+      defineField({name: 'label', type: 'string', title: 'Evidence label'}),
+      defineField({name: 'detail', type: 'string', title: 'What it establishes'}),
       defineField({name: 'sourceUrl', type: 'url', title: 'Source URL'}),
     ]}]}),
     defineField({name: 'contradictions', title: 'Conflicting claims', type: 'array', group: 'evidence', of: [{type: 'object', fields: [
@@ -27,15 +27,15 @@ export const oddityType = defineType({
       defineField({name: 'sourceB', type: 'url', title: 'Source B'}),
       defineField({name: 'note', type: 'string', title: 'Why they conflict'}),
     ]}]}),
-    defineField({name: 'weirdness', title: 'Weirdness', type: 'number', group: 'curation', validation: r => r.required().min(1).max(100)}),
-    defineField({name: 'stage', title: 'Workflow stage', type: 'string', group: 'curation', options: {list: [
-      {title: 'Inbox', value: 'inbox'},
-      {title: 'Researching', value: 'researching'},
-      {title: 'Needs review', value: 'review'},
-      {title: 'Exhibit ready', value: 'approved'},
+    defineField({name: 'weirdness', title: 'Signal intensity', type: 'number', group: 'curation', validation: r => r.required().min(1).max(100)}),
+    defineField({name: 'stage', title: 'Investigation stage', type: 'string', group: 'curation', options: {list: [
+      {title: 'Intake', value: 'inbox'},
+      {title: 'Investigating', value: 'researching'},
+      {title: 'Human review', value: 'review'},
+      {title: 'Cleared', value: 'approved'},
       {title: 'Archived', value: 'archived'},
     ]}, initialValue: 'inbox'}),
-    defineField({name: 'curatorNotes', title: 'Curator notes', type: 'text', rows: 5, group: 'curation'}),
-    defineField({name: 'featured', title: 'Feature in Observatory', type: 'boolean', group: 'curation', initialValue: false}),
+    defineField({name: 'curatorNotes', title: 'Investigator notes', type: 'text', rows: 5, group: 'curation'}),
+    defineField({name: 'featured', title: 'Mark as priority case', type: 'boolean', group: 'curation', initialValue: false}),
   ],
 })
