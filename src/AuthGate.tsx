@@ -10,9 +10,22 @@ type AuthSession = {
 
 type AuthMode = 'login' | 'signup' | 'forgot' | 'reset'
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined
+const RAW_SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined
 const SESSION_KEY = 'crisisiq.auth.session'
+
+// Supabase's Auth REST API lives at /auth/v1. The project URL itself must NOT
+// already contain /rest/v1 or /auth/v1. Normalize either accidental form here
+// so an incorrectly pasted Vercel value cannot produce /rest/v1/auth/v1/token.
+function getSupabaseBaseUrl() {
+  if (!RAW_SUPABASE_URL) return ''
+  return RAW_SUPABASE_URL
+    .trim()
+    .replace(/\/$/, '')
+    .replace(/\/(?:rest|auth)\/v1$/i, '')
+}
+
+const SUPABASE_URL = getSupabaseBaseUrl()
 
 function configReady() {
   return Boolean(SUPABASE_URL && SUPABASE_ANON_KEY)
@@ -20,7 +33,8 @@ function configReady() {
 
 async function supabaseRequest(path: string, options: RequestInit = {}, accessToken?: string) {
   if (!configReady()) throw new Error('Supabase is not connected yet. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in Vercel.')
-  const response = await fetch(`${SUPABASE_URL!.replace(/\/$/, '')}${path}`, {
+  const cleanPath = path.startsWith('/') ? path : `/${path}`
+  const response = await fetch(`${SUPABASE_URL}${cleanPath}`, {
     ...options,
     headers: {
       apikey: SUPABASE_ANON_KEY!,
