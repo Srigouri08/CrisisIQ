@@ -7,6 +7,16 @@ const mcpUrl = 'https://api.sanity.io/v1/context/organizations/obxrne2do/mcp/cri
 
 type ChatRequest = IncomingMessage & { body?: unknown }
 
+function errorDetail(error: unknown): string {
+  if (error instanceof Error) return error.message
+  if (typeof error === 'string') return error
+  try {
+    return JSON.stringify(error)
+  } catch {
+    return 'Unknown error.'
+  }
+}
+
 function sendJson(response: ServerResponse, statusCode: number, payload: { error: string }) {
   response.statusCode = statusCode
   response.setHeader('Content-Type', 'application/json; charset=utf-8')
@@ -95,8 +105,7 @@ export async function handleChat(request: ChatRequest, response: ServerResponse)
       },
       onError: ({ error }) => {
         streamFailure = error
-        const detail = error instanceof Error ? error.message : 'Unknown model stream error.'
-        console.error('Gemini stream failed:', detail)
+        console.error('Gemini stream failed:', errorDetail(error))
       },
     })
 
@@ -116,16 +125,16 @@ export async function handleChat(request: ChatRequest, response: ServerResponse)
     if (!response.headersSent && (!streamedText || streamFailure)) {
       sendJson(response, 502, {
         error: streamFailure
-          ? 'Gemini could not complete this investigation. The model may be busy or rate-limited; please try again later.'
+          ? `Gemini could not complete this investigation: ${errorDetail(streamFailure)}`
           : 'Gemini returned an empty response. Please try again.',
       })
       return
     }
     if (!response.writableEnded) response.end()
   } catch (error) {
-    const detail = error instanceof Error ? error.message : 'Unknown investigation error.'
+    const detail = errorDetail(error)
     console.error('Sanity-backed investigation request failed:', detail)
-    if (!response.headersSent) sendJson(response, 502, { error: 'The live investigation could not complete. Check the Sanity Context connection, token, and Gemini model configuration.' })
+    if (!response.headersSent) sendJson(response, 502, { error: `The live investigation could not complete: ${detail}` })
     else if (!response.writableEnded) response.end()
   } finally {
     await mcpClient?.close().catch(() => undefined)
