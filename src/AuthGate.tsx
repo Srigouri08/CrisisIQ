@@ -53,6 +53,10 @@ function getRecoveryToken() {
   return hash.get('access_token')
 }
 
+function getRecoveryRedirect() {
+  return `${window.location.origin}${window.location.pathname}`
+}
+
 export default function AuthGate() {
   const [session, setSession] = useState<AuthSession | null>(() => loadSession())
   const [mode, setMode] = useState<AuthMode>(() => getRecoveryToken() ? 'reset' : 'login')
@@ -87,11 +91,12 @@ export default function AuthGate() {
         saveSession(data)
         setSession(data)
       } else if (mode === 'signup') {
-        const data = await supabaseRequest('/auth/v1/signup', { method: 'POST', body: JSON.stringify({ email, password, data: { full_name: name } }) })
+        const data = await supabaseRequest('/auth/v1/signup', { method: 'POST', body: JSON.stringify({ email, password, data: { full_name: name }, options: { email_redirect_to: getRecoveryRedirect() } }) })
         if (data?.access_token) { saveSession(data); setSession(data) }
         else setNotice('Account created. Check your email to confirm your account, then sign in.')
       } else if (mode === 'forgot') {
-        await supabaseRequest('/auth/v1/recover', { method: 'POST', body: JSON.stringify({ email }) })
+        const redirectTo = getRecoveryRedirect()
+        await supabaseRequest(`/auth/v1/recover?redirect_to=${encodeURIComponent(redirectTo)}`, { method: 'POST', body: JSON.stringify({ email }) })
         setNotice('If an account exists for that email, a password reset link has been sent.')
       } else {
         const token = getRecoveryToken()
