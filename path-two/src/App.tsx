@@ -17,6 +17,7 @@ const config: SanityConfig[] = [{
 export default function App() {
   const [session, setSession] = useState<Session | null>(null)
   const [checkingAuth, setCheckingAuth] = useState(true)
+  const recoveryRoute = window.location.pathname === '/reset-password'
 
   useEffect(() => {
     if (!supabase) {
@@ -32,6 +33,7 @@ export default function App() {
   }, [])
 
   if (!supabaseConfigured) return <AuthScreen />
+  if (recoveryRoute) return <AuthScreen />
   if (checkingAuth) return <div className="boot">Checking your CrisisIQ session…</div>
   if (!session) return <AuthScreen />
 
